@@ -12,7 +12,6 @@ class Tree
       puts 'Use an array'
     end
     @root = build_tree(@array)
-    puts 'bst created successfully!'
   end
 
   def build_tree(array)
