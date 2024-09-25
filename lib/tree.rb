@@ -3,6 +3,7 @@
 # Tree - A Balanced BST
 class Tree
   require_relative 'node'
+  attr_accessor :root
 
   def initialize(array)
     if array.is_a?(Array)
@@ -23,6 +24,45 @@ class Tree
     root = Node.new(array[mid])
     root.left = build_tree(array[0...mid])
     root.right = build_tree(array[mid + 1..])
+
+    root
+  end
+
+  def insert(root, value)
+    if root.nil?
+      return Node.new(value)
+    elsif root.data == value
+      root
+    elsif root.data < value
+      root.right = insert(root.right, value)
+    else
+      root.left = insert(root.left, value)
+    end
+
+    root
+  end
+
+  def get_successor(current)
+    current = current.right
+    current = current.left while !current.nil? && !current.left.nil?
+    current
+  end
+
+  def delete(root, value)
+    return root if root.nil?
+
+    if root.data > value
+      root.left = delete(root.left, value)
+    elsif root.data < value
+      root.right = delete(root.right, value)
+    else
+      return root.right if root.left.nil?
+      return root.left if root.right.nil?
+
+      succ = get_successor(root)
+      root.data = succ.data
+      root.right = delete(root.right, succ.data)
+    end
 
     root
   end
