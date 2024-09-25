@@ -5,8 +5,8 @@ require_relative 'lib/tree'
 rand_arr = Array.new(15) { rand(1..100) }
 my_arr = [3, 5, 7, 9, 1, 2, 8, 6, 0]
 
-tree = Tree.new(rand_arr)
-my_tree = Tree.new(my_arr)
+tree = Tree.new(my_arr)
+# my_tree = Tree.new(my_arr)
 
 tree.pretty_print
 
@@ -19,4 +19,7 @@ tree.insert(tree.root, 108)
 tree.delete(tree.root, 8)
 tree.pretty_print
 
-puts my_tree
+# puts tree.find(tree.root, 5)
+# puts tree.find(tree.root, 2)
+# puts tree.find(tree.root, 9)
+puts "108 is the @data of Node:#{tree.find(tree.root, 108)}"
