@@ -2,7 +2,7 @@
 
 require_relative 'lib/tree'
 
-rand_arr = Array.new(15) { rand(1..100) }
+# rand_arr = Array.new(15) { rand(1..100) }
 my_arr = [3, 5, 7, 9, 1, 2, 8, 6, 0]
 
 tree = Tree.new(my_arr)
@@ -22,4 +22,5 @@ tree.pretty_print
 # puts tree.find(tree.root, 5)
 # puts tree.find(tree.root, 2)
 # puts tree.find(tree.root, 9)
-puts "108 is the @data of Node:#{tree.find(tree.root, 108)}"
+# puts "108 is the @data of Node:#{tree.find(tree.root, 108)}"
+puts tree.level_order(tree.root).inspect
