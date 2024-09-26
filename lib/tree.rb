@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Tree - A Balanced BST
-class Tree
+class Tree # rubocop:disable Metrics/ClassLength
   require_relative 'node'
   attr_accessor :root
 
@@ -42,7 +42,7 @@ class Tree
     root
   end
 
-  def delete(root, value)
+  def delete(root, value) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
     return root if root.nil?
 
     if root.data > value
@@ -120,6 +120,16 @@ class Tree
     postorder(root.left, result, &block)
     postorder(root.right, result, &block)
     block_given? ? block.call(root.data) : result << root.data
+  end
+
+  def height(node)
+    # returns number of edges in longest path from self to a leaf
+    return 0 if node.nil?
+
+    left_depth = height(node.left)
+    right_depth = height(node.right)
+
+    [left_depth, right_depth].max + 1
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true) # rubocop:disable Style/OptionalBooleanParameter
