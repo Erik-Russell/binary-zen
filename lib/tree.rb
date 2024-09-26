@@ -12,6 +12,7 @@ class Tree
       puts 'Use an array'
     end
     @root = build_tree(@array)
+    @traverse_out = []
   end
 
   def build_tree(array)
@@ -41,12 +42,6 @@ class Tree
     root
   end
 
-  def get_successor(current)
-    current = current.right
-    current = current.left while !current.nil? && !current.left.nil?
-    current
-  end
-
   def delete(root, value)
     return root if root.nil?
 
@@ -55,12 +50,11 @@ class Tree
     elsif root.data < value
       root.right = delete(root.right, value)
     else
-      return root.right if root.left.nil?
-      return root.left if root.right.nil?
+      return handle_single_child(root) if single_child?(root)
 
-      succ = get_successor(root)
-      root.data = succ.data
-      root.right = delete(root.right, succ.data)
+      successor = get_successor(root)
+      root.data = successor.data
+      root.right = delete(root.right, successor.data)
     end
 
     root
@@ -82,29 +76,76 @@ class Tree
     root
   end
 
-  def level_order(root)
+  def level_order(root, &block)
     return [] if root.nil?
 
     result = []
-    queue = []
-
-    queue.push(root)
+    queue = [root]
 
     until queue.empty?
       node = queue.shift
-
-      result << node.data
-
-      queue.push(node.left) unless node.left.nil?
-
-      queue.push(node.right) unless node.right.nil?
+      block_given? ? block.call(node.data) : result << node.data
+      enqueue_children(queue, node)
     end
+
     result
+  end
+
+  # inorder == left -> root -> right
+  def inorder(root, result = [], &block)
+    return [] if root.nil?
+
+    inorder(root.left, result, &block)
+    block_given? ? block.call(root.data) : result << root.data
+    inorder(root.right, result, &block)
+
+    result
+  end
+
+  # preorder == root -> left -> right
+  def preorder(root, result = [], &block)
+    return [] if root.nil?
+
+    block_given? ? block.call(root.data) : result << root.data
+    preorder(root.left, result, &block)
+    preorder(root.right, result, &block)
+
+    result
+  end
+
+  # postorder == left -> right -> root
+  def postorder(root, result = [], &block)
+    return [] if root.nil?
+
+    postorder(root.left, result, &block)
+    postorder(root.right, result, &block)
+    block_given? ? block.call(root.data) : result << root.data
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true) # rubocop:disable Style/OptionalBooleanParameter
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
     pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
+  end
+
+  private
+
+  def enqueue_children(queue, node)
+    queue.push(node.left) unless node.left.nil?
+    queue.push(node.right) unless node.right.nil?
+  end
+
+  def get_successor(current)
+    current = current.right
+    current = current.left while !current.nil? && !current.left.nil?
+    current
+  end
+
+  def single_child?(node)
+    node.left.nil? || node.right.nil?
+  end
+
+  def handle_single_child(node)
+    node.left.nil? ? node.right : node.left
   end
 end
