@@ -126,10 +126,24 @@ class Tree # rubocop:disable Metrics/ClassLength
     # returns number of edges in longest path from self to a leaf
     return 0 if node.nil?
 
-    left_depth = height(node.left)
-    right_depth = height(node.right)
+    left_height = height(node.left)
+    right_height = height(node.right)
 
-    [left_depth, right_depth].max + 1
+    [left_height, right_height].max + 1
+  end
+
+  def depth(root, node)
+    return -1 if root.nil?
+
+    return 0 if root == node
+
+    left_distance = depth(root.left, node)
+    return left_distance + 1 if left_distance >= 0
+
+    right_distance = depth(root.right, node)
+    return right_distance + 1 if right_distance >= 0
+
+    -1
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true) # rubocop:disable Style/OptionalBooleanParameter
