@@ -93,7 +93,7 @@ class Tree # rubocop:disable Metrics/ClassLength
 
   # inorder == left -> root -> right
   def inorder(root, result = [], &block)
-    return [] if root.nil?
+    return result if root.nil?
 
     inorder(root.left, result, &block)
     block_given? ? block.call(root.data) : result << root.data
@@ -104,7 +104,7 @@ class Tree # rubocop:disable Metrics/ClassLength
 
   # preorder == root -> left -> right
   def preorder(root, result = [], &block)
-    return [] if root.nil?
+    return result if root.nil?
 
     block_given? ? block.call(root.data) : result << root.data
     preorder(root.left, result, &block)
@@ -115,7 +115,7 @@ class Tree # rubocop:disable Metrics/ClassLength
 
   # postorder == left -> right -> root
   def postorder(root, result = [], &block)
-    return [] if root.nil?
+    return result if root.nil?
 
     postorder(root.left, result, &block)
     postorder(root.right, result, &block)
@@ -132,6 +132,12 @@ class Tree # rubocop:disable Metrics/ClassLength
     [left_height, right_height].max + 1
   end
 
+  def balanced?(node)
+    return true if check_balance(node) != -1
+
+    false
+  end
+
   def depth(root, node)
     return -1 if root.nil?
 
@@ -146,6 +152,11 @@ class Tree # rubocop:disable Metrics/ClassLength
     -1
   end
 
+  def rebalance
+    sorted_nodes = inorder(@root)
+    @root = build_tree(sorted_nodes)
+  end
+
   def pretty_print(node = @root, prefix = '', is_left = true) # rubocop:disable Style/OptionalBooleanParameter
     pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
     puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
@@ -153,6 +164,24 @@ class Tree # rubocop:disable Metrics/ClassLength
   end
 
   private
+
+  def build_balanced_tree(array)
+    nil if array.empty?
+  end
+
+  def check_balance(node)
+    return 0 if node.nil?
+
+    left_height = check_balance(node.left)
+    return -1 if left_height == -1
+
+    right_height = check_balance(node.right)
+    return -1 if right_height == -1
+
+    return -1 if (left_height - right_height).abs > 1
+
+    [left_height, right_height].max + 1
+  end
 
   def enqueue_children(queue, node)
     queue.push(node.left) unless node.left.nil?
